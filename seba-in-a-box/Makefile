@@ -4,7 +4,7 @@ M               ?= $(BUILD)/milestones
 MAKEDIR         := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 WORKSPACE       ?= $(HOME)
 VIRTUALENV      ?= $(WORKSPACE)/cord/test
-SEBAVALUES      ?= configs/seba-ponsim.yaml
+SEBAVALUES      ?= configs/seba-ponsim-iec-arm64.yaml
 TESTTAGS        ?= stable
 
 # used to start logging/monitoring and other infrastructure charts
@@ -16,12 +16,12 @@ DOCKER_VERSION  ?= "17.06"
 K8S_VERSION     ?= "1.12.7"
 
 HELM_VERSION    ?= "2.14.2"
-HELM_SHA256SUM  ?= "9f50e69cf5cfa7268b28686728ad0227507a169e52bf59c99ada872ddd9679f0"
-HELM_PLATFORM   ?= "linux-amd64"
+HELM_SHA256SUM  ?= "1f86fc294382365f4dfd9fa08c62337d248f7c8662e3166e24ce083264f105f2"
+HELM_PLATFORM   ?= "linux-arm64"
 
 CORDCTL_VERSION    ?= 1.1.2
-CORDCTL_SHA256SUM  ?= 41f629dea3e94d98855af2ce3751c6522750d1fe61da2b3b05604402387631cf
-CORDCTL_PLATFORM   ?= linux-amd64
+CORDCTL_SHA256SUM  ?= 454d93a64d833225fd3fcc26718125415323f02aec35a82afaf3ef87362a8e5d
+CORDCTL_PLATFORM   ?= linux-arm64
 
 KAFKA_CHART_VERSION  ?= 0.13.3
 KAFKA_POD := "pod/cord-kafka-0"
@@ -166,7 +166,7 @@ $(WORKSPACE)/cord/helm-charts: | $(M)/setup
 
 $(M)/kafka: | $(WORKSPACE)/cord/helm-charts $(M)/helm-init
 	cd $(WORKSPACE)/cord/helm-charts && \
-	helm upgrade --install $(HELM_GLOBAL_ARGS) cord-kafka --version $(KAFKA_CHART_VERSION) -f examples/kafka-single.yaml incubator/kafka
+	helm upgrade --install $(HELM_GLOBAL_ARGS) cord-kafka --version $(KAFKA_CHART_VERSION) -f examples/kafka-iec.yaml incubator/kafka
 	touch $@
 
 $(M)/kafka-running: | $(M)/kafka
