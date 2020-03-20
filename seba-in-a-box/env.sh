@@ -8,6 +8,7 @@ export M="${BUILD}/milestones"
 export SEBAVALUES=configs/seba-ponsim-iec-arm64.yaml
 export WORKSPACE=${HOME}
 
+rm -rf "${M}"
 mkdir -p "${M}"
 mkdir -p "${WORKSPACE}/cord/test"
 
