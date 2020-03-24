@@ -54,8 +54,7 @@ else
 fi
 
 # Pull the repo for extra K8S repos
-cd "${WORKSPACE}"
-git clone https://github.com/iecedge/helm-k8s-charts.git
+(cd "${WORKSPACE}"; git clone https://github.com/iecedge/helm-k8s-charts.git)
 
 touch "${M}/kubeadm"
 test -L "${WORKSPACE}/cord/helm-charts/incubator" || \
