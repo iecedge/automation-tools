@@ -1,6 +1,14 @@
 #!/bin/bash
-export AUTOMATION_TOOLS="https://github.com/iecedge/automation-tools.git"
-export AUTOMATION_TOOLS_REV="cord-7.0-arm64"
+AUTO_TOOLS="${WORKSPACE}/automation-tools"
+AUTO_TOOLS_REPO="https://github.com/iecedge/automation-tools.git"
+AUTO_TOOLS_REV="cord-7.0-arm64"
+HELM_CHARTS="${WORKSPACE}/cord/helm-charts"
+HELM_CHARTS_REPO="https://github.com/iecedge/helm-charts.git"
+HELM_CHARTS_REV="cord-7.0-arm64"
+HELM_K8S_CHARTS="${WORKSPACE}/helm-k8s-charts"
+HELM_K8S_CHARTS_REPO="https://github.com/iecedge/helm-k8s-charts.git"
+HELM_K8S_CHARTS_REV="master"
+
 export CORDCTL_PLATFORM="linux-arm64"
 export CORDCTL_SHA256SUM="454d93a64d833225fd3fcc26718125415323f02aec35a82afaf3ef87362a8e5d"
 export BUILD="/tmp"
@@ -35,31 +43,36 @@ else
 fi
 
 # Faking helm-charts repo clone to our own git submodule if not already there
-HELM_CHARTS="${WORKSPACE}/cord/helm-charts"
-IECEDGE_HELM_CHARTS="https://github.com/iecedge/helm-charts.git"
-IECEDGE_HELM_CHARTS_REV="cord-7.0-arm64"
 if [ -d "${HELM_CHARTS}" -o -L "${HELM_CHARTS}" ]
 then
    echo "The helm-charts repo already exists"
 else
-   git clone "${IECEDGE_HELM_CHARTS}" -b "${IECEDGE_HELM_CHARTS_REV}" "${HELM_CHARTS}"
+   git clone "${HELM_CHARTS_REPO}" "${HELM_CHARTS}"
+   (cd "${HELM_CHARTS}"; git checkout "${HELM_CHARTS_REV}")
 fi
 
-if [ -d "${WORKSPACE}/automation-tools" -o -L "${WORKSPACE}/automation-tools" ]
+# Pull automation-tools if it doesn't already exist
+if [ -d "${AUTO_TOOLS}" -o -L "${AUTO_TOOLS}" ]
 then
   echo "The automation-tools repo already exists"
 else
-  git clone "${AUTOMATION_TOOLS}" automation-tools
-  (cd automation-tools; git checkout "${AUTOMATION_TOOLS_REV}")
+  git clone "${AUTO_TOOLS_REPO}" "${AUTO_TOOLS}"
+  (cd "${AUTO_TOOLS}"; git checkout "${AUTO_TOOLS_REV}")
 fi
 
 # Pull the repo for extra K8S repos
-(cd "${WORKSPACE}"; git clone https://github.com/iecedge/helm-k8s-charts.git)
+if [ -d "${HELM_K8S_CHARTS}" -o -L "${HELM_K8S_CHARTS}" ]
+then
+  echo "The helm-k8s-charts repo already exists"
+else
+  git clone "${HELM_K8S_CHARTS_REPO}" "${HELM_K8S_CHARTS}"
+  (cd "${HELM_K8S_CHARTS}"; git checkout "${HELM_K8S_CHARTS_REV}")
+fi
 
 touch "${M}/kubeadm"
-test -L "${WORKSPACE}/cord/helm-charts/incubator" || \
-ln -s "${WORKSPACE}/helm-k8s-charts/incubator" "${WORKSPACE}/cord/helm-charts/incubator"
-test -L "${WORKSPACE}/cord/helm-charts/stable" || \
-ln -s "${WORKSPACE}/helm-k8s-charts/stable" "${WORKSPACE}/cord/helm-charts/stable"
+test -L "${HELM_CHARTS}/incubator" || \
+ln -s "${HELM_K8S_CHARTS}/incubator" "${HELM_CHARTS}/incubator"
+test -L "${HELM_CHARTS}/stable" || \
+ln -s "${HELM_K8S_CHARTS}/stable" "${HELM_CHARTS}/stable"
 touch "${M}/helm-init"
 
