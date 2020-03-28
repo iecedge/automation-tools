@@ -170,7 +170,7 @@ $(M)/kafka: | $(WORKSPACE)/cord/helm-charts $(M)/helm-init
 	touch $@
 
 $(M)/kafka-running: | $(M)/kafka
-	kubectl wait $(KAFKA_POD) --for condition=Ready --timeout=180s
+	kubectl wait $(KAFKA_POD) --for condition=Ready --timeout=360s
 	touch $@
 
 $(M)/nem-monitoring: | $(M)/kafka-running
