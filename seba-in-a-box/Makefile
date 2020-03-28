@@ -215,7 +215,7 @@ $(M)/voltha: | $(M)/kafka-running $(INFRA_PREREQS) $(M)/etcd-operator-ready
 $(M)/etcd-operator-ready: | $(WORKSPACE)/cord/helm-charts $(M)/helm-init
 	cd $(WORKSPACE)/cord/helm-charts; \
 	helm upgrade --install etcd-operator --version $(ETCD_OPERATOR_VERSION) stable/etcd-operator -f $(SEBAVALUES)
-	timeout 120s bash -c "until kubectl get crd | grep etcdclusters; do echo 'Waiting for etcdclusters CRD to be available'; sleep 5; done"
+	timeout 300s bash -c "until kubectl get crd | grep etcdclusters; do echo 'Waiting for etcdclusters CRD to be available'; sleep 5; done"
 	touch $@
 
 $(M)/voltha-running: | $(M)/voltha
@@ -280,22 +280,22 @@ $(M)/siab: | $(M)/voltha-running $(M)/mininet $(M)/ponsim-tosca
 		sleep 5; \
 	done
 	http -a karaf:karaf --ignore-stdin POST http://127.0.0.1:30120/onos/v1/configuration/org.opencord.olt.impl.Olt defaultVlan=65535
-	timeout 1m bash -c "until http GET http://127.0.0.1:30125/health|jq '.state'|grep -q HEALTHY; do echo 'Waiting for VOLTHA to be HEALTHY'; sleep 10; done"
+	timeout 2m bash -c "until http GET http://127.0.0.1:30125/health|jq '.state'|grep -q HEALTHY; do echo 'Waiting for VOLTHA to be HEALTHY'; sleep 10; done"
 	echo "[passed] VOLTHA is HEALTHY"
-	timeout 2m bash -c "until http GET http://127.0.0.1:30125/api/v1/devices|jq '.items[].admin_state'|grep ENABLED|wc -l|grep -q $$(( $(NUM_OLTS) + $(NUM_ONUS_PER_OLT) * $(NUM_OLTS) )); do echo 'Waiting for OLT and ONU to be enabled in VOLTHA'; sleep 10; done"
+	timeout 4m bash -c "until http GET http://127.0.0.1:30125/api/v1/devices|jq '.items[].admin_state'|grep ENABLED|wc -l|grep -q $$(( $(NUM_OLTS) + $(NUM_ONUS_PER_OLT) * $(NUM_OLTS) )); do echo 'Waiting for OLT and ONU to be enabled in VOLTHA'; sleep 10; done"
 	echo "[passed] OLT and ONU are enabled in VOLTHA"
-	timeout 2m bash -c "until http -a karaf:karaf GET http://127.0.0.1:30120/onos/v1/devices|jq '.devices[].available'|grep true|wc -l|grep -q $$(( $(NUM_OLTS) + 1 )); do echo 'Waiting for VOLTHA logical device and agg switch to be available in ONOS'; sleep 10; done"
+	timeout 4m bash -c "until http -a karaf:karaf GET http://127.0.0.1:30120/onos/v1/devices|jq '.devices[].available'|grep true|wc -l|grep -q $$(( $(NUM_OLTS) + 1 )); do echo 'Waiting for VOLTHA logical device and agg switch to be available in ONOS'; sleep 10; done"
 	echo "[passed] VOLTHA logical device and agg switch are available in ONOS"
 	if [ $(NEM_WORKFLOW) = att-workflow ]; then \
-		timeout 10s bash -c "until cordctl model list AttWorkflowDriverServiceInstance -q -f 'authentication_state=AWAITING' | wc -l | grep -q $$(( $(NUM_OLTS) * $(NUM_ONUS_PER_OLT) )); do echo 'waiting for ATT Workflow Driver ServiceInstance to be in AWAITING state'; sleep 10; done"; \
+		timeout 30s bash -c "until cordctl model list AttWorkflowDriverServiceInstance -q -f 'authentication_state=AWAITING' | wc -l | grep -q $$(( $(NUM_OLTS) * $(NUM_ONUS_PER_OLT) )); do echo 'waiting for ATT Workflow Driver ServiceInstance to be in AWAITING state'; sleep 10; done"; \
 		echo "[passed] ATT Workflow Driver ServiceInstance is in AWAITING state"; \
 	fi
 	if [ $(NEM_WORKFLOW) = tt-workflow ]; then \
-		timeout 10s bash -c "until cordctl model list TtWorkflowDriverServiceInstance -q -f 'dhcp_state=AWAITING' | wc -l | grep -q $$(( $(NUM_OLTS) * $(NUM_ONUS_PER_OLT) )); do echo 'waiting for TT Workflow Driver ServiceInstance to be in AWAITING state'; sleep 10; done"; \
+		timeout 30s bash -c "until cordctl model list TtWorkflowDriverServiceInstance -q -f 'dhcp_state=AWAITING' | wc -l | grep -q $$(( $(NUM_OLTS) * $(NUM_ONUS_PER_OLT) )); do echo 'waiting for TT Workflow Driver ServiceInstance to be in AWAITING state'; sleep 10; done"; \
 		echo "[passed] TT Workflow Driver ServiceInstance is in AWAITING state"; \
 	fi
 	if [ $(NEM_WORKFLOW) = dt-workflow ]; then \
-		timeout 10s bash -c "until cordctl model list DtWorkflowDriverServiceInstance -q -f 'authentication_state=AWAITING' | wc -l | grep -q $$(( $(NUM_OLTS) * $(NUM_ONUS_PER_OLT) )); do echo 'waiting for DT Workflow Driver ServiceInstance to be in AWAITING state'; sleep 10; done"; \
+		timeout 30s bash -c "until cordctl model list DtWorkflowDriverServiceInstance -q -f 'authentication_state=AWAITING' | wc -l | grep -q $$(( $(NUM_OLTS) * $(NUM_ONUS_PER_OLT) )); do echo 'waiting for DT Workflow Driver ServiceInstance to be in AWAITING state'; sleep 10; done"; \
 		echo "[passed] DT Workflow Driver ServiceInstance is in AWAITING state"; \
 	fi
 	sudo iptables -P FORWARD ACCEPT
