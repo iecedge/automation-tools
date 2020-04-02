@@ -267,9 +267,9 @@ $(M)/nem-running: | $(M)/nem
 	touch $@
 
 $(M)/ponsim-tosca: | $(M)/onos $(M)/nem-running
-	timeout 60s bash -c "cordctl model sync ServiceInstanceAttribute -f 'id>0' -y"
-	timeout 60s bash -c "cordctl model sync ONOSApp -f 'id>0' -y"
-	timeout 60s bash -c "until http -a karaf:karaf GET http://127.0.0.1:30120/onos/v1/applications/org.opencord.kafka|jq '.state'|grep -q ACTIVE; do echo 'Waiting for Kafka app to become ACTIVE'; sleep 5; done"
+	timeout 180s bash -c "cordctl model sync ServiceInstanceAttribute -f 'id>0' -y"
+	timeout 180s bash -c "cordctl model sync ONOSApp -f 'id>0' -y"
+	timeout 180s bash -c "until http -a karaf:karaf GET http://127.0.0.1:30120/onos/v1/applications/org.opencord.kafka|jq '.state'|grep -q ACTIVE; do echo 'Waiting for Kafka app to become ACTIVE'; sleep 5; done"
 	cd $(WORKSPACE)/cord/helm-charts; helm upgrade --install $(HELM_GLOBAL_ARGS) ponsim-pod xos-profiles/ponsim-pod -f $(SEBAVALUES) --set workflow=$(NEM_WORKFLOW) --set numOlts=$(NUM_OLTS) --set numOnus=$(NUM_ONUS_PER_OLT)
 	$(WORKSPACE)/cord/helm-charts/scripts/wait_for_pods.sh
 	touch $@
@@ -356,10 +356,9 @@ $(WORKSPACE)/cord/incubator/voltha: | $(M)/setup
 
 PYBOT_ARGS ?=
 $(M)/qatests: | $(M)/siab $(M)/qatests-prereqs $(WORKSPACE)/cord/test/cord-tester $(WORKSPACE)/cord/incubator/voltha
-	cd $(WORKSPACE)/cord/test/cord-tester/src/test/cord-api/ && \
-	WORKSPACE=$(VIRTUALENV) bash ./setup_venv.sh && \
-	source $(VIRTUALENV)/venv-cord-tester/bin/activate && \
-	cd Tests/WorkflowValidations/ && \
+	cd $(WORKSPACE)/cord/test/cord-tester/ ;\
+	make venv_cord; source venv_cord/bin/activate ; set -u;\
+	cd src/test/cord-api/Tests/WorkflowValidations/ ;\
 	robot $(PYBOT_ARGS) --removekeywords wuks -e notready -i $(TESTTAGS) -v VOLTHA_DIR:$(WORKSPACE)/cord/incubator/voltha SIAB.robot
 	touch $@
 
