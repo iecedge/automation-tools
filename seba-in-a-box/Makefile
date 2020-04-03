@@ -343,12 +343,12 @@ run-tests-latest: | $(M)/qatests
 run-tests-latest: PYBOT_ARGS := -v SUBSCRIBER_FILENAME:SIABSubscriberLatest -v WHITELIST_FILENAME:SIABWhitelistLatest -v OLT_DEVICE_FILENAME:SIABOLT0Device
 
 $(M)/qatests-prereqs:
-	sudo apt install -y python-pip virtualenv
+	sudo apt install -y python-pip virtualenv python3-dev ibffi-dev libssl-dev libpq-dev
 	touch $@
 
 $(WORKSPACE)/cord/test/cord-tester: | $(M)/setup
 	mkdir -p $(WORKSPACE)/cord/test
-	cd $(WORKSPACE)/cord/test && git clone https://gerrit.opencord.org/cord-tester
+	cd $(WORKSPACE)/cord/test && git clone https://github.com/iecedge/cord-tester -b cord-7.0-arm64
 
 $(WORKSPACE)/cord/incubator/voltha: | $(M)/setup
 	mkdir -p $(WORKSPACE)/cord/incubator
