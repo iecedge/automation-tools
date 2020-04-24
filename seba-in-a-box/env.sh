@@ -5,9 +5,6 @@ AUTO_TOOLS_REV="cord-7.0-arm64"
 HELM_CHARTS="${WORKSPACE}/cord/helm-charts"
 HELM_CHARTS_REPO="https://github.com/iecedge/helm-charts.git"
 HELM_CHARTS_REV="cord-7.0-arm64"
-HELM_K8S_CHARTS="${WORKSPACE}/helm-k8s-charts"
-HELM_K8S_CHARTS_REPO="https://github.com/iecedge/helm-k8s-charts.git"
-HELM_K8S_CHARTS_REV="master"
 
 export CORDCTL_PLATFORM="linux-arm64"
 export CORDCTL_SHA256SUM="454d93a64d833225fd3fcc26718125415323f02aec35a82afaf3ef87362a8e5d"
@@ -60,19 +57,8 @@ else
   (cd "${AUTO_TOOLS}"; git checkout "${AUTO_TOOLS_REV}")
 fi
 
-# Pull the repo for extra K8S repos
-if [ -d "${HELM_K8S_CHARTS}" -o -L "${HELM_K8S_CHARTS}" ]
-then
-  echo "The helm-k8s-charts repo already exists"
-else
-  git clone "${HELM_K8S_CHARTS_REPO}" "${HELM_K8S_CHARTS}"
-  (cd "${HELM_K8S_CHARTS}"; git checkout "${HELM_K8S_CHARTS_REV}")
-fi
-
 touch "${M}/kubeadm"
-test -L "${HELM_CHARTS}/incubator" || \
-ln -s "${HELM_K8S_CHARTS}/incubator" "${HELM_CHARTS}/incubator"
-test -L "${HELM_CHARTS}/stable" || \
-ln -s "${HELM_K8S_CHARTS}/stable" "${HELM_CHARTS}/stable"
+helm repo add incubator https://iecedge.github.io/helm-k8s-charts/incubator/
+helm repo add stable https://iecedge.github.io/helm-k8s-charts/stable/
 touch "${M}/helm-init"
 
