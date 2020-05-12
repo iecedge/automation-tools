@@ -343,7 +343,7 @@ run-tests-latest: | $(M)/qatests
 run-tests-latest: PYBOT_ARGS := -v SUBSCRIBER_FILENAME:SIABSubscriberLatest -v WHITELIST_FILENAME:SIABWhitelistLatest -v OLT_DEVICE_FILENAME:SIABOLT0Device
 
 $(M)/qatests-prereqs:
-	sudo apt install -y python-pip virtualenv python3-dev ibffi-dev libssl-dev libpq-dev
+	sudo apt install -y python-pip virtualenv python3-dev libffi-dev libssl-dev libpq-dev
 	touch $@
 
 $(WORKSPACE)/cord/test/cord-tester: | $(M)/setup
