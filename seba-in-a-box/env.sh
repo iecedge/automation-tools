@@ -1,4 +1,5 @@
 #!/bin/bash
+WORKSPACE="${WORKSPACE:-$HOME}"
 AUTO_TOOLS="${WORKSPACE}/automation-tools"
 AUTO_TOOLS_REPO="https://github.com/iecedge/automation-tools.git"
 AUTO_TOOLS_REV="cord-7.0-arm64"
@@ -11,7 +12,6 @@ export CORDCTL_SHA256SUM="454d93a64d833225fd3fcc26718125415323f02aec35a82afaf3ef
 export BUILD="/tmp"
 export M="${BUILD}/milestones"
 export SEBAVALUES=configs/seba-ponsim-iec-arm64.yaml
-export WORKSPACE=${HOME}
 
 rm -rf "${M}"
 mkdir -p "${M}"
