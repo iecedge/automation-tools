@@ -170,7 +170,7 @@ $(M)/kafka: | $(WORKSPACE)/cord/helm-charts $(M)/helm-init
 	touch $@
 
 $(M)/kafka-running: | $(M)/kafka
-	kubectl wait $(KAFKA_POD) --for condition=Ready --timeout=360s
+	timeout 800s bash -c "until kubectl get pod|grep cord-kafka|grep 1/1|wc -l|grep 6; do echo 'Waiting for cord-kafka to be ready'; sleep 10; done"
 	touch $@
 
 $(M)/nem-monitoring: | $(M)/kafka-running
