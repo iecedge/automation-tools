@@ -221,6 +221,12 @@ $(M)/etcd-operator-ready: | $(WORKSPACE)/cord/helm-charts $(M)/helm-init
 $(M)/voltha-running: | $(M)/voltha
 	timeout 450s bash -c "until kubectl get pod|grep etcd-cluster|grep 1/1|wc -l|grep 3; do echo 'Waiting for etcd-cluster to be ready'; sleep 10; done"
 	$(WORKSPACE)/cord/helm-charts/scripts/wait_for_pods.sh voltha
+	timeout 2m bash -c "until http GET http://127.0.0.1:30125/health|jq '.state'|grep -q HEALTHY; do echo 'Waiting for VOLTHA to be HEALTHY'; sleep 10; done" || true
+	if ! (http GET http://127.0.0.1:30125/health|jq '.state'|grep -q HEALTHY); \
+	then \
+		echo "Voltha core not healthy or unresponsive. Resetting pod vcore-0."; \
+		kubectl -n voltha delete pod vcore-0; \
+	fi
 	touch $@
 
 $(M)/ponnet: | $(M)/voltha
