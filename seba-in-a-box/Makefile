@@ -226,6 +226,7 @@ $(M)/voltha-running: | $(M)/voltha
 	then \
 		echo "Voltha core not healthy or unresponsive. Resetting pod vcore-0."; \
 		kubectl -n voltha delete pod vcore-0; \
+		$(WORKSPACE)/cord/helm-charts/scripts/wait_for_pods.sh voltha; \
 	fi
 	touch $@
 
