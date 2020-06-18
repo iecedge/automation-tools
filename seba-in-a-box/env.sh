@@ -5,7 +5,7 @@ AUTO_TOOLS_REPO="https://github.com/iecedge/automation-tools.git"
 AUTO_TOOLS_REV="cord-7.0-arm64"
 HELM_CHARTS="${WORKSPACE}/cord/helm-charts"
 HELM_CHARTS_REPO="https://github.com/iecedge/helm-charts.git"
-HELM_CHARTS_REV="cord-7.0-arm64"
+HELM_CHARTS_REV="${HELM_CHARTS_REV:-cord-7.0-arm64}"
 
 export CORDCTL_PLATFORM="linux-arm64"
 export CORDCTL_SHA256SUM="454d93a64d833225fd3fcc26718125415323f02aec35a82afaf3ef87362a8e5d"
