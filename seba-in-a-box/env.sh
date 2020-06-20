@@ -6,6 +6,8 @@ AUTO_TOOLS_REV="cord-7.0-arm64"
 HELM_CHARTS="${WORKSPACE}/cord/helm-charts"
 HELM_CHARTS_REPO="https://github.com/iecedge/helm-charts.git"
 HELM_CHARTS_REV="${HELM_CHARTS_REV:-cord-7.0-arm64}"
+PIP_HTTPIE_VER=0.9.4
+PIP_PYGMENTS_VER=2.5.2
 
 export CORDCTL_PLATFORM="linux-arm64"
 export CORDCTL_SHA256SUM="454d93a64d833225fd3fcc26718125415323f02aec35a82afaf3ef87362a8e5d"
@@ -17,7 +19,11 @@ rm -rf "${M}"
 mkdir -p "${M}"
 mkdir -p "${WORKSPACE}/cord/test"
 
-sudo apt install -y httpie jq software-properties-common bridge-utils make
+if apt --version >/dev/null 2>&1; then
+  sudo apt install -y httpie jq software-properties-common bridge-utils make
+else
+  pip install httpie=="${PIP_HTTPIE_VER}" pygments=="${PIP_PYGMENTS_VER}" --user
+fi
 sudo iptables -P FORWARD ACCEPT
 touch "${M}/setup"
 
@@ -57,8 +63,12 @@ else
   (cd "${AUTO_TOOLS}"; git checkout "${AUTO_TOOLS_REV}")
 fi
 
+if [ ! -f /etc/kubernetes/admin.conf ] && [ -f "${HOME}/.kube/config" ]; then
+  sudo cp "${HOME}/.kube/config" /etc/kubernetes/admin.conf
+fi
+
+sudo touch "/usr/bin/kubeadm"
 touch "${M}/kubeadm"
 helm repo add incubator https://iecedge.github.io/helm-k8s-charts/incubator/
 helm repo add stable https://iecedge.github.io/helm-k8s-charts/stable/
 touch "${M}/helm-init"
-
