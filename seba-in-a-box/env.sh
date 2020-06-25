@@ -102,3 +102,8 @@ if ! kubectl get nodes --show-labels | grep -q "node-role.kubernetes.io/master="
   mnode=$(kubectl get nodes -o wide | grep ${K8S_MASTER_IP} | cut -f1 -d' ')
   kubectl label nodes "${mnode}" node-role.kubernetes.io/master=
 fi
+
+if [ -n "$(kubectl get psp -o name 2>/dev/null)" ]
+then
+   kubectl apply -f seba-privileged.yaml
+fi
