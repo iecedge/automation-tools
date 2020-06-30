@@ -15,6 +15,25 @@ export BUILD="/tmp"
 export M="${BUILD}/milestones"
 export SEBAVALUES=configs/seba-ponsim-iec-arm64.yaml
 
+# Check the Kubernetes Server Version;
+# For v1.16 and greater we need different versions of charts
+#!/bin/bash
+
+minor=$(kubectl version | sed -n 's/Server Version: version.Info{Major:"1", Minor:"\([0-9]*\)".*$/\1/p')
+
+if [ -z "${minor}" ]
+then
+  echo "Failed to get Kubernetes Server Version"
+  return 1
+fi
+
+echo "Kubernetes Server Version Minor=${minor}"
+if [ "${minor}" -ge 16 ]
+then
+   export KAFKA_CHART_VERSION=0.13.3-1.16
+   export ETCD_OPERATOR_VERSION=0.8.3-1.16
+fi
+
 rm -rf "${M}"
 mkdir -p "${M}"
 mkdir -p "${WORKSPACE}/cord/test"
