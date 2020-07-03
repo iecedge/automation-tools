@@ -29,10 +29,9 @@ spec:
     - hostPath
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: ClusterRole
 metadata:
   name: seba-privileged-role
-  namespace: kube-system
 rules:
   - apiGroups: ['policy']
     resources: ['podsecuritypolicies']
@@ -41,23 +40,22 @@ rules:
       - seba-privileged-policy
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
+kind: ClusterRoleBinding
 metadata:
-  name: seba-privileged-rolebinding
-  namespace: kube-system
+  name: seba-privileged-clusterrolebinding
 subjects:
   - kind: Group
     apiGroup: rbac.authorization.k8s.io
-    name: system:serviceaccounts
+    name: system:serviceaccounts:kube-system
 roleRef:
-  kind: Role
+  kind: ClusterRole
   name: seba-privileged-role
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: seba-privileged-clusterrolebinding
+  name: seba-tiller-privileged-clusterrolebinding
 subjects:
   - kind: User
     apiGroup: rbac.authorization.k8s.io
