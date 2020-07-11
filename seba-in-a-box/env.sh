@@ -72,3 +72,14 @@ touch "${M}/kubeadm"
 helm repo add incubator https://iecedge.github.io/helm-k8s-charts/incubator/
 helm repo add stable https://iecedge.github.io/helm-k8s-charts/stable/
 touch "${M}/helm-init"
+
+# The PONSim related charts expect to find a node with a certain label
+# Will try to figure it out based on the K8S_MASTER_IP value
+if ! kubectl get nodes --show-labels | grep -q "node-role.kubernetes.io/master="; then
+  if [ "x${K8S_MASTER_IP}" = "x" ]; then
+    echo "No node with label node-rule.kubernetes.io/master and K8S_MASTER_IP not set"
+    return 1
+  fi
+  mnode=$(kubectl get nodes -o wide | grep ${K8S_MASTER_IP} | cut -f1 -d' ')
+  kubectl label nodes "${mnode}" node-role.kubernetes.io/master=
+fi
