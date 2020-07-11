@@ -8,12 +8,13 @@ HELM_CHARTS_REPO="https://github.com/iecedge/helm-charts.git"
 HELM_CHARTS_REV="${HELM_CHARTS_REV:-cord-7.0-arm64}"
 PIP_HTTPIE_VER=0.9.4
 PIP_PYGMENTS_VER=2.5.2
+SEBAVALUES="${SEBAVALUES:-configs/seba-ponsim-iec-arm64.yaml}"
 
 export CORDCTL_PLATFORM="linux-arm64"
 export CORDCTL_SHA256SUM="454d93a64d833225fd3fcc26718125415323f02aec35a82afaf3ef87362a8e5d"
 export BUILD="/tmp"
 export M="${BUILD}/milestones"
-export SEBAVALUES=configs/seba-ponsim-iec-arm64.yaml
+export SEBAVALUES
 
 # Check the Kubernetes Server Version;
 # For v1.16 and greater we need different versions of charts
