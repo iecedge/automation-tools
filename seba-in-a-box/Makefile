@@ -61,7 +61,7 @@ both: $(M)/siab $(M)/bbsim-tosca
 latest: SEBAVALUES := configs/seba-ponsim.yaml,configs/seba-ponsim-latest.yaml
 latest: ponsim
 
-stable: SEBAVALUES := configs/seba-ponsim-iec-arm64.yaml
+stable:
 stable: ponsim
 
 siab-2.0-alpha1: SEBAVALUES := configs/siab-v2.0.0-alpha1.yaml
