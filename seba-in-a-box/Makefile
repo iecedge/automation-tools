@@ -231,7 +231,7 @@ $(M)/voltha-running: | $(M)/voltha
 	touch $@
 
 $(M)/ponnet: | $(M)/voltha
-	cd $(WORKSPACE)/cord/helm-charts; helm upgrade --install $(HELM_GLOBAL_ARGS) ponnet ponnet --set numOlts=$(NUM_OLTS) --set numOnus=$(NUM_ONUS_PER_OLT)
+	cd $(WORKSPACE)/cord/helm-charts; helm upgrade --install $(HELM_GLOBAL_ARGS) ponnet ponnet -f $(SEBAVALUES) --set numOlts=$(NUM_OLTS) --set numOnus=$(NUM_ONUS_PER_OLT)
 	$(WORKSPACE)/cord/helm-charts/scripts/wait_for_pods.sh kube-system
 	touch $@
 
