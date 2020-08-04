@@ -42,7 +42,7 @@ mkdir -p "${WORKSPACE}/cord/test"
 if apt --version >/dev/null 2>&1; then
   sudo apt install -y httpie jq software-properties-common bridge-utils make
 else
-  pip install httpie=="${PIP_HTTPIE_VER}" pygments=="${PIP_PYGMENTS_VER}" --user
+  (umask 0022; sudo pip install httpie=="${PIP_HTTPIE_VER}" pygments=="${PIP_PYGMENTS_VER}")
 fi
 sudo iptables -P FORWARD ACCEPT
 touch "${M}/setup"
